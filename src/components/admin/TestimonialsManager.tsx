@@ -3,6 +3,7 @@ import { Plus, Edit2, Trash2, X, Quote, ArrowUp, ArrowDown, Star } from 'lucide-
 import { useContent } from '../../context/ContentContext';
 import { TestimonialItem } from '../../types';
 import { getAssetUrl } from '../../utils/assetUrl';
+import { ImageDualInput } from './ImageDualInput';
 
 export function TestimonialsManager() {
   const { content, updateSection, isSaving } = useContent();
@@ -156,18 +157,17 @@ export function TestimonialsManager() {
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-              Client Headshot Photo URL
-            </label>
-            <input
-              type="text"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              placeholder="https://images.unsplash.com/..."
-              className="w-full px-3.5 py-2 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-            />
-          </div>
+          {/* Client Headshot Dual Input (Option 1: Upload from Computer, Option 2: Image URL) */}
+          <ImageDualInput
+            label="Client Headshot Photo"
+            value={formData.image}
+            onChange={(newImage) => setFormData({ ...formData, image: newImage })}
+            maxWidth={400}
+            maxHeight={400}
+            quality={0.85}
+            placeholder="https://images.unsplash.com/... or paste image URL"
+            previewShape="circle"
+          />
 
           <div className="space-y-1">
             <label className="text-[11px] uppercase tracking-wider text-[#A38468] font-medium">

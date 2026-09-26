@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Plus, Edit2, Trash2, Check, X, ArrowUp, ArrowDown, Sparkles, Layers } from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
 import { ServiceItem } from '../../types';
+import { getAssetUrl } from '../../utils/assetUrl';
+import { ImageDualInput } from './ImageDualInput';
 
 export function ServicesManager() {
   const { content, updateSection, isSaving } = useContent();
@@ -288,19 +290,18 @@ export function ServicesManager() {
           </div>
 
           {/* Visual Archive Card Image & Caption */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#251D18]">
-            <div className="space-y-1">
-              <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-                Card Image URL
-              </label>
-              <input
-                type="text"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                placeholder="/images/workspace-travertine.jpg"
-                className="w-full px-3.5 py-2 rounded-xl border border-[#2D231E] bg-[#120D0B] text-xs text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-              />
-            </div>
+          <div className="space-y-4 pt-2 border-t border-[#251D18]">
+            <ImageDualInput
+              label="Service Archive Image"
+              value={formData.image}
+              onChange={(newImg) => setFormData({ ...formData, image: newImg })}
+              maxWidth={900}
+              maxHeight={700}
+              quality={0.85}
+              placeholder="/images/workspace-travertine.jpg or paste image URL"
+              previewShape="rounded"
+            />
+
             <div className="space-y-1">
               <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
                 Card Image Caption

@@ -70,6 +70,21 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         } else {
           setHasFirestoreDoc(false);
           setIsCustomized(false);
+          // If admin is authenticated, automatically seed defaultContent to Firestore content/main
+          if (user) {
+            setDoc(doc(db, 'content', 'main'), {
+              ...defaultContent,
+              updatedAt: serverTimestamp(),
+              updatedBy: user.email || 'system-bootstrap'
+            })
+              .then(() => {
+                setHasFirestoreDoc(true);
+                setIsCustomized(true);
+              })
+              .catch((err) => {
+                console.warn('Auto-seed to Firestore postponed until permissions ready:', err.message);
+              });
+          }
         }
       },
       (error) => {
@@ -79,7 +94,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     );
 
     return () => unsub();
-  }, []);
+  }, [user]);
 
   const updateSection = async (sectionKey: keyof SiteContent, data: any) => {
     setIsSaving(true);

@@ -3,6 +3,7 @@ import { Plus, Edit2, Trash2, X, Image as ImageIcon, ArrowUp, ArrowDown, Eye } f
 import { useContent } from '../../context/ContentContext';
 import { GalleryItem } from '../../types';
 import { getAssetUrl } from '../../utils/assetUrl';
+import { ImageDualInput } from './ImageDualInput';
 
 export function GalleryManager() {
   const { content, updateSection, isSaving } = useContent();
@@ -166,34 +167,17 @@ export function GalleryManager() {
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-              Image URL (Unsplash or direct image link)
-            </label>
-            <input
-              type="text"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              placeholder="https://images.unsplash.com/photo-..."
-              className="w-full px-3.5 py-2 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-            />
-          </div>
-
-          {/* Image Preview */}
-          {formData.image && (
-            <div className="flex items-center gap-4 p-3 rounded-xl bg-[#120D0B] border border-[#251D18]">
-              <img
-                src={formData.image}
-                alt="Preview"
-                className="w-16 h-20 object-cover rounded-lg border border-[#3A2E28]"
-              />
-              <div className="text-xs text-[#8E7158] space-y-1">
-                <p className="text-[#FAF8F5] font-medium">{formData.text || 'Untitled'}</p>
-                <p className="text-[10px] text-[#A38468] uppercase">{formData.subtext}</p>
-                <p className="text-[10px]">Live preview on website will display in 4:5 aspect ratio.</p>
-              </div>
-            </div>
-          )}
+          {/* Showcase Item Dual Image Input (Option 1: Upload from Computer, Option 2: Image URL) */}
+          <ImageDualInput
+            label="Feed Showcase Image"
+            value={formData.image}
+            onChange={(newImg) => setFormData({ ...formData, image: newImg })}
+            maxWidth={900}
+            maxHeight={1125}
+            quality={0.85}
+            placeholder="https://images.unsplash.com/photo-... or paste image URL"
+            previewShape="rounded"
+          />
 
           {/* Form Actions */}
           <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#251D18]">

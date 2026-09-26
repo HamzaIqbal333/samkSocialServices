@@ -20,6 +20,7 @@ import { ServicesManager } from './ServicesManager';
 import { GalleryManager } from './GalleryManager';
 import { TestimonialsManager } from './TestimonialsManager';
 import { DiagnosticManager } from './DiagnosticManager';
+import { ImageDualInput } from './ImageDualInput';
 
 export function SiteCMSManager() {
   const {
@@ -42,6 +43,7 @@ export function SiteCMSManager() {
   const [heroTitle2, setHeroTitle2] = useState(content.hero.titleLine2);
   const [heroItalic2, setHeroItalic2] = useState(content.hero.titleItalic2);
   const [heroDesc, setHeroDesc] = useState(content.hero.description);
+  const [heroBgImage, setHeroBgImage] = useState(content.hero.bgImage);
   const [tickerItemsStr, setTickerItemsStr] = useState(content.hero.tickerItems.join('\n'));
 
   // Copy editing state for Contact / Studio
@@ -49,6 +51,7 @@ export function SiteCMSManager() {
   const [contactLocation, setContactLocation] = useState(content.contact.location);
   const [instagramHandle, setInstagramHandle] = useState(content.contact.instagramHandle);
   const [founderQuote, setFounderQuote] = useState(content.contact.founderQuote);
+  const [founderImage, setFounderImage] = useState(content.contact.founderImage);
   const [availability, setAvailability] = useState(content.contact.availability);
 
   const handleSaveHero = async () => {
@@ -64,6 +67,7 @@ export function SiteCMSManager() {
       titleLine2: heroTitle2,
       titleItalic2: heroItalic2,
       description: heroDesc,
+      bgImage: heroBgImage,
       tickerItems: tickers.length ? tickers : content.hero.tickerItems
     });
   };
@@ -75,6 +79,7 @@ export function SiteCMSManager() {
       location: contactLocation,
       instagramHandle: instagramHandle,
       founderQuote: founderQuote,
+      founderImage: founderImage,
       availability: availability
     });
   };
@@ -296,6 +301,18 @@ export function SiteCMSManager() {
               />
             </div>
 
+            {/* Hero Background Image Dual Input */}
+            <ImageDualInput
+              label="Hero Main Background Image"
+              value={heroBgImage}
+              onChange={(newImg) => setHeroBgImage(newImg)}
+              maxWidth={1400}
+              maxHeight={900}
+              quality={0.82}
+              placeholder="/images/hero-editorial-cover.jpg or paste image URL"
+              previewShape="rounded"
+            />
+
             <div className="space-y-1">
               <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
                 Marquee Ticker Items (One item per line)
@@ -397,6 +414,18 @@ export function SiteCMSManager() {
                 className="w-full px-4 py-2.5 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468] resize-none"
               />
             </div>
+
+            {/* Founder Headshot Image Dual Input */}
+            <ImageDualInput
+              label="Founder Headshot Photo (Contact Box)"
+              value={founderImage}
+              onChange={(newImg) => setFounderImage(newImg)}
+              maxWidth={500}
+              maxHeight={500}
+              quality={0.85}
+              placeholder="/images/founder-blazer.jpg or paste image URL"
+              previewShape="circle"
+            />
 
             <div className="flex items-center justify-between pt-4 border-t border-[#251D18]">
               <button
