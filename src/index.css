@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-body: 'Poppins', sans-serif;
+    --font-heading: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+    --font-serif: 'Tinos', serif;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: #130E0C;
+    color: #FAF8F5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+.font-serif-italic {
+  font-family: 'Tinos', serif;
+  font-style: italic;
+}
+
+.font-heading {
+  font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+}
+
+.font-body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #130E0C;
+}
+::-webkit-scrollbar-thumb {
+  background: #3A2E28;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A38468;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

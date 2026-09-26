@@ -1,0 +1,156 @@
+{
+  "entities": {
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "Client consultation booking and service inquiry submitted through the editorial contact form",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the inquiry"
+        },
+        "name": {
+          "type": "string",
+          "description": "Client or founder full name",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "studio": {
+          "type": "string",
+          "description": "Brand, studio, or business name",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "description": "Client email address",
+          "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+          "maxLength": 120
+        },
+        "handle": {
+          "type": "string",
+          "description": "Instagram handle or website URL",
+          "maxLength": 150
+        },
+        "service": {
+          "type": "string",
+          "description": "Selected service package",
+          "maxLength": 100
+        },
+        "message": {
+          "type": "string",
+          "description": "Goals, scope details, and desired timeline",
+          "maxLength": 3000
+        },
+        "status": {
+          "type": "string",
+          "enum": ["new", "reviewed", "contacted", "archived"],
+          "description": "Workflow status of the inquiry"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["name", "studio", "email", "service", "status"]
+    },
+    "SiteContent": {
+      "title": "SiteContent",
+      "description": "Live customizable editorial copy, services, and portfolio data",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Configuration document ID"
+        },
+        "hero": {
+          "type": "object",
+          "description": "Hero section content"
+        },
+        "mission": {
+          "type": "object",
+          "description": "Mission section content"
+        },
+        "philosophy": {
+          "type": "object",
+          "description": "Philosophy and founder section content"
+        },
+        "checklist": {
+          "type": "object",
+          "description": "Strategic fit diagnostic items"
+        },
+        "gallery": {
+          "type": "object",
+          "description": "Visual portfolio items"
+        },
+        "services": {
+          "type": "array",
+          "description": "List of studio service offerings"
+        },
+        "testimonials": {
+          "type": "array",
+          "description": "Client testimonials"
+        },
+        "contact": {
+          "type": "object",
+          "description": "Contact info and form configuration"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "UID of admin who updated the content"
+        }
+      },
+      "required": ["updatedAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized admin users for studio management",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "email": {
+          "type": "string",
+          "description": "Admin email address"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["owner", "admin"]
+        },
+        "addedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "role"]
+    }
+  },
+  "firestore": {
+    "/inquiries/{inquiryId}": {
+      "schema": {
+        "$ref": "#/entities/Inquiry"
+      },
+      "description": "Client inquiry submissions"
+    },
+    "/content/{contentId}": {
+      "schema": {
+        "$ref": "#/entities/SiteContent"
+      },
+      "description": "Site content settings and customized editorial data"
+    },
+    "/admins/{adminId}": {
+      "schema": {
+        "$ref": "#/entities/Admin"
+      },
+      "description": "Admin identity and access records"
+    }
+  }
+}
