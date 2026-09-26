@@ -10,7 +10,8 @@ import {
   RotateCcw,
   CheckCircle2,
   PhoneCall,
-  Compass
+  Compass,
+  Database
 } from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
 import { ServicesManager } from './ServicesManager';
@@ -19,7 +20,7 @@ import { TestimonialsManager } from './TestimonialsManager';
 import { DiagnosticManager } from './DiagnosticManager';
 
 export function SiteCMSManager() {
-  const { content, updateField, updateSection, resetToDefault, isSaving, saveMessage } = useContent();
+  const { content, updateField, updateSection, resetToDefault, syncAllToFirestore, isSaving, saveMessage } = useContent();
 
   const [cmsSubTab, setCmsSubTab] = useState<'services' | 'gallery' | 'testimonials' | 'diagnostic' | 'hero' | 'contact'>('services');
 
@@ -141,6 +142,18 @@ export function SiteCMSManager() {
           <PhoneCall className="w-3.5 h-3.5" />
           <span>Contact & Studio Info</span>
         </button>
+
+        <div className="ml-auto pl-2 py-1">
+          <button
+            onClick={syncAllToFirestore}
+            disabled={isSaving}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-bold bg-[#FAF8F5] text-[#130E0C] hover:bg-[#A38468] hover:text-[#FAF8F5] transition-all cursor-pointer shadow-md"
+            title="Writes all current content to the Firestore (default) database collection /content/main"
+          >
+            <Database className="w-3.5 h-3.5 text-[#A38468]" />
+            <span>{isSaving ? 'Syncing...' : 'Sync All to Firestore (default)'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Status banner */}

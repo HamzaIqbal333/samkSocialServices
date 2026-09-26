@@ -488,6 +488,11 @@ export function AdminPanelPage({ onNavigateToSite }: AdminPanelPageProps) {
                 </div>
 
                 <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#120D0B] border border-[#231A15]">
+                  <span className="text-[#8E7158]">Active Firestore Database:</span>
+                  <span className="font-mono text-emerald-400 font-semibold">(default)</span>
+                </div>
+
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#120D0B] border border-[#231A15]">
                   <span className="text-[#8E7158]">Inquiries Collection:</span>
                   <span className="font-mono text-[#FAF8F5]">/inquiries (Real-time onSnapshot)</span>
                 </div>

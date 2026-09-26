@@ -14,6 +14,7 @@ interface ContentContextType {
   updateSection: (sectionKey: keyof SiteContent, data: any) => Promise<void>;
   updateField: (path: string, value: any) => Promise<void>;
   resetToDefault: () => Promise<void>;
+  syncAllToFirestore: () => Promise<void>;
   isSaving: boolean;
   saveMessage: string | null;
 }
@@ -148,6 +149,23 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const syncAllToFirestore = async () => {
+    setIsSaving(true);
+    try {
+      await setDoc(doc(db, 'content', 'main'), {
+        ...content,
+        updatedAt: serverTimestamp(),
+        updatedBy: user?.uid || 'admin'
+      });
+      setSaveMessage('All content successfully synchronized to Firestore (default) database!');
+      setTimeout(() => setSaveMessage(null), 4000);
+    } catch (err) {
+      handleFirestoreError(err, OperationType.WRITE, 'content/main');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <ContentContext.Provider
       value={{
@@ -158,6 +176,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         updateSection,
         updateField,
         resetToDefault,
+        syncAllToFirestore,
         isSaving,
         saveMessage
       }}
