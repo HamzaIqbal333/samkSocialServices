@@ -36,6 +36,7 @@ import { handleFirestoreError, OperationType } from '../firebase/errors';
 import { useAuth } from '../context/AuthContext';
 import { useContent } from '../context/ContentContext';
 import { InquiryRecord } from '../types';
+import { SiteCMSManager } from './admin/SiteCMSManager';
 
 interface AdminPanelPageProps {
   onNavigateToSite: () => void;
@@ -50,25 +51,6 @@ export function AdminPanelPage({ onNavigateToSite }: AdminPanelPageProps) {
   const [loadingInquiries, setLoadingInquiries] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'new' | 'reviewed' | 'contacted' | 'archived'>('all');
-
-  // CMS Editor form states
-  const [heroTitle1, setHeroTitle1] = useState(content.hero.titleLine1);
-  const [heroItalic1, setHeroItalic1] = useState(content.hero.titleItalic1);
-  const [heroTitle2, setHeroTitle2] = useState(content.hero.titleLine2);
-  const [heroItalic2, setHeroItalic2] = useState(content.hero.titleItalic2);
-  const [heroDesc, setHeroDesc] = useState(content.hero.description);
-  const [founderQuote, setFounderQuote] = useState(content.contact.founderQuote);
-  const [contactEmail, setContactEmail] = useState(content.contact.email);
-
-  useEffect(() => {
-    setHeroTitle1(content.hero.titleLine1);
-    setHeroItalic1(content.hero.titleItalic1);
-    setHeroTitle2(content.hero.titleLine2);
-    setHeroItalic2(content.hero.titleItalic2);
-    setHeroDesc(content.hero.description);
-    setFounderQuote(content.contact.founderQuote);
-    setContactEmail(content.contact.email);
-  }, [content]);
 
   // Real-time listener for Firestore collection "inquiries"
   useEffect(() => {
@@ -136,16 +118,6 @@ export function AdminPanelPage({ onNavigateToSite }: AdminPanelPageProps) {
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, `inquiries/${id}`);
     }
-  };
-
-  const handleSaveCMS = async () => {
-    await updateField('hero.titleLine1', heroTitle1);
-    await updateField('hero.titleItalic1', heroItalic1);
-    await updateField('hero.titleLine2', heroTitle2);
-    await updateField('hero.titleItalic2', heroItalic2);
-    await updateField('hero.description', heroDesc);
-    await updateField('contact.founderQuote', founderQuote);
-    await updateField('contact.email', contactEmail);
   };
 
   // Filtered inquiries
@@ -482,147 +454,8 @@ export function AdminPanelPage({ onNavigateToSite }: AdminPanelPageProps) {
 
         {/* ================= TAB 2: LIVE CONTENT CMS ================= */}
         {activeTab === 'cms' && (
-          <div className="max-w-4xl mx-auto space-y-8 animate-fadeIn">
-            <div className="p-6 rounded-3xl border border-[#2D231E] bg-[#1A1412] space-y-6">
-              <div className="border-b border-[#251D18] pb-4 flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-heading font-medium text-[#FAF8F5]">
-                    Live Website Copy CMS
-                  </h3>
-                  <p className="text-xs text-[#8E7158]">
-                    Updates persist directly to Firestore and sync instantly for all visitors.
-                  </p>
-                </div>
-                {saveMessage && (
-                  <div className="px-3.5 py-1.5 rounded-full bg-emerald-950/40 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>{saveMessage}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Hero Section Headlines */}
-              <div className="space-y-4">
-                <h4 className="text-xs uppercase tracking-widest text-[#A38468] font-semibold">
-                  Hero Headlines
-                </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-                      Line 1 Main Text
-                    </label>
-                    <input
-                      type="text"
-                      value={heroTitle1}
-                      onChange={(e) => setHeroTitle1(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-                      Line 1 Serif Italic
-                    </label>
-                    <input
-                      type="text"
-                      value={heroItalic1}
-                      onChange={(e) => setHeroItalic1(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-                      Line 2 Main Text
-                    </label>
-                    <input
-                      type="text"
-                      value={heroTitle2}
-                      onChange={(e) => setHeroTitle2(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-                      Line 2 Serif Italic
-                    </label>
-                    <input
-                      type="text"
-                      value={heroItalic2}
-                      onChange={(e) => setHeroItalic2(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-                    Hero Paragraph Description
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={heroDesc}
-                    onChange={(e) => setHeroDesc(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468] resize-none"
-                  />
-                </div>
-              </div>
-
-              {/* Contact Details */}
-              <div className="space-y-4 pt-4 border-t border-[#251D18]">
-                <h4 className="text-xs uppercase tracking-widest text-[#A38468] font-semibold">
-                  Founder Quote & Direct Email
-                </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-                      Studio Email
-                    </label>
-                    <input
-                      type="email"
-                      value={contactEmail}
-                      onChange={(e) => setContactEmail(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] uppercase tracking-wider text-[#8E7158]">
-                      Founder Quote
-                    </label>
-                    <input
-                      type="text"
-                      value={founderQuote}
-                      onChange={(e) => setFounderQuote(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#2D231E] bg-[#120D0B] text-sm text-[#FAF8F5] focus:outline-none focus:border-[#A38468]"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Save Controls */}
-              <div className="pt-4 flex items-center justify-between border-t border-[#251D18]">
-                <button
-                  onClick={resetToDefault}
-                  disabled={isSaving}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#3A2E28] text-xs text-[#8E7158] hover:text-[#FAF8F5] transition-colors cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset Defaults</span>
-                </button>
-
-                <button
-                  onClick={handleSaveCMS}
-                  disabled={isSaving}
-                  className="flex items-center gap-2 px-7 py-3 rounded-full bg-[#FAF8F5] text-[#130E0C] text-xs font-semibold uppercase tracking-wider hover:bg-[#A38468] hover:text-[#FAF8F5] transition-all cursor-pointer shadow-lg"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>{isSaving ? 'Publishing...' : 'Publish to Firestore'}</span>
-                </button>
-              </div>
-            </div>
+          <div className="max-w-5xl mx-auto space-y-6 animate-fadeIn">
+            <SiteCMSManager />
           </div>
         )}
 

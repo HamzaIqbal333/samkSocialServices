@@ -12,19 +12,18 @@ import { Mission } from './components/Mission';
 import { Philosophy } from './components/Philosophy';
 import { Diagnostic } from './components/Diagnostic';
 import { Gallery } from './components/Gallery';
+import { ClientMarquee } from './components/ClientMarquee';
 import { Services } from './components/Services';
 import { Testimonials } from './components/Testimonials';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { AdminLogin } from './components/AdminLogin';
 import { AdminPanelPage } from './components/AdminPanelPage';
-import { AdminDrawer } from './components/AdminDrawer';
 import { testConnection } from './firebase/testConnection';
 import { Shield, ArrowUpRight } from 'lucide-react';
 
 function MainLayout() {
   const { user, isAuthenticated, logout } = useAuth();
-  const [adminDrawerOpen, setAdminDrawerOpen] = useState(false);
 
   // Check if current URL matches /admin, #admin, or ?admin=true
   const checkAdminRoute = () => {
@@ -49,11 +48,21 @@ function MainLayout() {
       setIsAdminRoute(checkAdminRoute());
     };
 
+    // Secret shortcut for Admin: Ctrl+Shift+A or Cmd+Shift+A
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'a' || e.key === 'A')) {
+        e.preventDefault();
+        navigateToAdmin();
+      }
+    };
+
     window.addEventListener('popstate', handleLocationChange);
     window.addEventListener('hashchange', handleLocationChange);
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
       window.removeEventListener('hashchange', handleLocationChange);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -139,11 +148,7 @@ function MainLayout() {
       )}
 
       {/* Main Sticky Navbar */}
-      <Navbar
-        onOpenAdmin={() => setAdminDrawerOpen(true)}
-        onNavigateToAdmin={navigateToAdmin}
-        isAdminModeActive={false}
-      />
+      <Navbar />
 
       <main className="flex-1">
         <Hero />
@@ -151,18 +156,13 @@ function MainLayout() {
         <Philosophy />
         <Diagnostic />
         <Gallery />
+        <ClientMarquee />
         <Services />
         <Testimonials />
         <Contact />
       </main>
 
       <Footer />
-
-      {/* Quick Drawer view */}
-      <AdminDrawer
-        isOpen={adminDrawerOpen}
-        onClose={() => setAdminDrawerOpen(false)}
-      />
     </div>
   );
 }

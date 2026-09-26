@@ -1,14 +1,17 @@
 import { useState, useRef } from 'react';
-import { ArrowLeft, ArrowRight, Instagram, X, Eye } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Instagram, X, Eye, Play, Pause } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import { GalleryItem } from '../types';
+import { Marquee } from './Marquee';
 
 export function Gallery() {
   const { content } = useContent();
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
+  const [isAutoScroll, setIsAutoScroll] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
+    setIsAutoScroll(false);
     if (scrollRef.current) {
       const amount = direction === 'left' ? -380 : 380;
       scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
@@ -35,18 +38,30 @@ export function Gallery() {
             </p>
           </div>
 
-          {/* Slider Controls */}
-          <div className="flex items-center gap-3 self-end md:self-auto">
+          {/* Controls: Auto-marquee toggle & Arrows */}
+          <div className="flex items-center gap-2.5 self-end md:self-auto">
+            <button
+              onClick={() => setIsAutoScroll(!isAutoScroll)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 text-xs uppercase tracking-wider rounded-full border transition-all cursor-pointer ${
+                isAutoScroll
+                  ? 'border-[#A38468] bg-[#A38468]/15 text-[#FAF8F5]'
+                  : 'border-[#3A2E28] bg-[#1E1714] text-[#8E7158] hover:text-[#FAF8F5]'
+              }`}
+              title={isAutoScroll ? 'Pause Continuous Flow' : 'Enable Continuous Flow'}
+            >
+              {isAutoScroll ? <Pause className="w-3.5 h-3.5 text-[#A38468]" /> : <Play className="w-3.5 h-3.5" />}
+              <span className="hidden sm:inline">{isAutoScroll ? 'Continuous' : 'Paused'}</span>
+            </button>
             <button
               onClick={() => scroll('left')}
-              className="p-3 rounded-full border border-[#3A2E28] bg-[#1E1714] text-[#C4B29E] hover:text-[#FAF8F5] hover:border-[#A38468] transition-all cursor-pointer"
+              className="p-2.5 sm:p-3 rounded-full border border-[#3A2E28] bg-[#1E1714] text-[#C4B29E] hover:text-[#FAF8F5] hover:border-[#A38468] transition-all cursor-pointer"
               aria-label="Scroll left"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => scroll('right')}
-              className="p-3 rounded-full border border-[#3A2E28] bg-[#1E1714] text-[#C4B29E] hover:text-[#FAF8F5] hover:border-[#A38468] transition-all cursor-pointer"
+              className="p-2.5 sm:p-3 rounded-full border border-[#3A2E28] bg-[#1E1714] text-[#C4B29E] hover:text-[#FAF8F5] hover:border-[#A38468] transition-all cursor-pointer"
               aria-label="Scroll right"
             >
               <ArrowRight className="w-4 h-4" />
@@ -54,43 +69,80 @@ export function Gallery() {
           </div>
         </div>
 
-        {/* Horizontal Carousel */}
-        <div
-          ref={scrollRef}
-          className="flex gap-6 overflow-x-auto pb-8 pt-2 scrollbar-none snap-x snap-mandatory cursor-grab active:cursor-grabbing"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {content.gallery.items.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedItem(item)}
-              className="group relative flex-none w-[280px] sm:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-[#2D231E] bg-[#181210] shadow-lg hover:border-[#A38468]/60 transition-all duration-300 snap-start cursor-pointer"
-            >
-              <img
-                src={item.image}
-                alt={item.text}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.05]"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#130E0C] via-[#130E0C]/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
+        {/* Continuous Flow Marquee or Manual Carousel */}
+        {isAutoScroll ? (
+          <div className="py-2">
+            <Marquee speedSeconds={35} direction="left" pauseOnHover={true} className="py-2">
+              {content.gallery.items.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setSelectedItem(item)}
+                  className="group relative flex-none w-[270px] sm:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-[#2D231E] bg-[#181210] shadow-lg hover:border-[#A38468]/70 hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.text}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.05]"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#130E0C] via-[#130E0C]/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
 
-              {/* View Overlay Icon */}
-              <div className="absolute top-4 right-4 p-2 rounded-full bg-[#130E0C]/70 backdrop-blur-sm text-[#FAF8F5] opacity-0 group-hover:opacity-100 transition-opacity">
-                <Eye className="w-4 h-4" />
-              </div>
+                  {/* View Overlay Icon */}
+                  <div className="absolute top-4 right-4 p-2 rounded-full bg-[#130E0C]/70 backdrop-blur-sm text-[#FAF8F5] opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Eye className="w-4 h-4" />
+                  </div>
 
-              {/* Bottom Details */}
-              <div className="absolute bottom-5 left-5 right-5 space-y-1">
-                <p className="text-sm font-heading font-medium tracking-wider text-[#FAF8F5]">
-                  {item.text}
-                </p>
-                <p className="text-xs uppercase tracking-widest text-[#A38468] font-medium">
-                  {item.subtext}
-                </p>
+                  {/* Bottom Details */}
+                  <div className="absolute bottom-5 left-5 right-5 space-y-1">
+                    <p className="text-sm font-heading font-medium tracking-wider text-[#FAF8F5]">
+                      {item.text}
+                    </p>
+                    <p className="text-xs uppercase tracking-widest text-[#A38468] font-medium">
+                      {item.subtext}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </Marquee>
+          </div>
+        ) : (
+          <div
+            ref={scrollRef}
+            className="flex gap-6 overflow-x-auto pb-8 pt-2 scrollbar-none snap-x snap-mandatory cursor-grab active:cursor-grabbing"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {content.gallery.items.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => setSelectedItem(item)}
+                className="group relative flex-none w-[280px] sm:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-[#2D231E] bg-[#181210] shadow-lg hover:border-[#A38468]/60 transition-all duration-300 snap-start cursor-pointer"
+              >
+                <img
+                  src={item.image}
+                  alt={item.text}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.05]"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#130E0C] via-[#130E0C]/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
+
+                {/* View Overlay Icon */}
+                <div className="absolute top-4 right-4 p-2 rounded-full bg-[#130E0C]/70 backdrop-blur-sm text-[#FAF8F5] opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Eye className="w-4 h-4" />
+                </div>
+
+                {/* Bottom Details */}
+                <div className="absolute bottom-5 left-5 right-5 space-y-1">
+                  <p className="text-sm font-heading font-medium tracking-wider text-[#FAF8F5]">
+                    {item.text}
+                  </p>
+                  <p className="text-xs uppercase tracking-widest text-[#A38468] font-medium">
+                    {item.subtext}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Bottom Cue & Action */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-[#2A201A]">

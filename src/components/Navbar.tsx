@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, SlidersHorizontal, Shield } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
-import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
-  onOpenAdmin: () => void;
-  onNavigateToAdmin: () => void;
-  isAdminModeActive: boolean;
+  isAdminModeActive?: boolean;
 }
 
-export function Navbar({ onOpenAdmin, onNavigateToAdmin, isAdminModeActive }: NavbarProps) {
+export function Navbar({ isAdminModeActive = false }: NavbarProps) {
   const { content } = useContent();
-  const { isAuthenticated } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -68,33 +64,10 @@ export function Navbar({ onOpenAdmin, onNavigateToAdmin, isAdminModeActive }: Na
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-3">
-            {/* Direct Admin Panel Route Link */}
-            <button
-              onClick={onNavigateToAdmin}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border border-[#3A2E28] bg-[#1E1714]/60 text-[#C4B29E] hover:text-[#FAF8F5] hover:border-[#A38468]/60 transition-all cursor-pointer"
-              title="Admin Panel (/admin)"
-            >
-              <Shield className="w-3.5 h-3.5 text-[#A38468]" />
-              <span className="hidden sm:inline">Admin Panel</span>
-              {isAuthenticated && (
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
-              )}
-            </button>
-
-            {/* Studio CMS & Inquiries Drawer Trigger */}
-            <button
-              onClick={onOpenAdmin}
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border border-[#3A2E28] bg-[#1E1714]/60 text-[#C4B29E] hover:text-[#FAF8F5] hover:border-[#A38468]/60 transition-all cursor-pointer"
-              title="Studio Portal & Inquiries"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#A38468]" />
-              <span>Inquiries</span>
-            </button>
-
             {/* Primary Action Button */}
             <a
               href="#contact"
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2 text-xs tracking-wider uppercase font-medium rounded-full bg-[#FAF8F5] text-[#130E0C] hover:bg-[#A38468] hover:text-[#FAF8F5] transition-all transform active:scale-95 shadow-md shadow-black/20"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs tracking-wider uppercase font-medium rounded-full bg-[#FAF8F5] text-[#130E0C] hover:bg-[#A38468] hover:text-[#FAF8F5] transition-all transform active:scale-95 shadow-md shadow-black/20"
             >
               {content.nav.ctaText}
             </a>
@@ -140,16 +113,6 @@ export function Navbar({ onOpenAdmin, onNavigateToAdmin, isAdminModeActive }: Na
             >
               {content.nav.ctaText}
             </a>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onNavigateToAdmin();
-              }}
-              className="w-full flex items-center justify-center gap-2 py-3 text-xs tracking-wider uppercase rounded-full border border-[#3A2E28] text-[#C4B29E] bg-[#1E1714]"
-            >
-              <Shield className="w-3.5 h-3.5 text-[#A38468]" />
-              Go to /admin Panel
-            </button>
           </div>
         </div>
       )}

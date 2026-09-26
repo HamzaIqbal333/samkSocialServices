@@ -1,15 +1,38 @@
 import { ArrowUp } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
+import { Marquee } from './Marquee';
 
 export function Footer() {
   const { content } = useContent();
+
+  const footerMarqueeTags = [
+    'SAM K. SOCIALS',
+    'NOW BOOKING Q4 & Q1 RETAINERS',
+    'ON-LOCATION CONTENT CREATION',
+    'BESPOKE DIGITAL AUTHORITY',
+    'SYDNEY • WORLDWIDE'
+  ];
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <footer className="bg-[#0E0A09] text-[#FAF8F5] pt-16 pb-12 border-t border-[#231A15]">
+    <footer className="bg-[#0E0A09] text-[#FAF8F5] pt-0 pb-12 border-t border-[#231A15] overflow-hidden">
+      {/* Top Ambient Marquee Strip */}
+      <div className="border-b border-[#231A15] bg-[#140F0D] py-3.5 mb-14">
+        <Marquee speedSeconds={28} direction="right">
+          {footerMarqueeTags.map((tag, idx) => (
+            <div key={idx} className="flex items-center gap-6 sm:gap-10 shrink-0 whitespace-nowrap">
+              <span className="text-[11px] sm:text-xs tracking-[0.25em] uppercase font-medium text-[#A38468]">
+                {tag}
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3A2E28] shrink-0" />
+            </div>
+          ))}
+        </Marquee>
+      </div>
+
       <div className="max-w-7xl mx-auto px-5 sm:px-8 space-y-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Brand & Bio */}

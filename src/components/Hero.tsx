@@ -1,5 +1,6 @@
 import { ArrowDownRight, Sparkles } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
+import { Marquee } from './Marquee';
 
 export function Hero() {
   const { content } = useContent();
@@ -67,19 +68,17 @@ export function Hero() {
       </div>
 
       {/* Ticker / Marquee Bar */}
-      <div className="relative z-10 w-full mt-10 border-t border-b border-[#2A201A] bg-[#17110F]/80 backdrop-blur-sm py-3.5 overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap flex items-center gap-10">
-          {[...content.hero.tickerItems, ...content.hero.tickerItems, ...content.hero.tickerItems].map(
-            (item, index) => (
-              <div key={index} className="flex items-center gap-10">
-                <span className="text-xs sm:text-sm tracking-widest uppercase font-medium text-[#C4B29E]">
-                  {item}
-                </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#A38468]/70" />
-              </div>
-            )
-          )}
-        </div>
+      <div className="relative z-10 w-full mt-10 border-t border-b border-[#2A201A] bg-[#17110F]/90 backdrop-blur-md py-4 overflow-hidden">
+        <Marquee speedSeconds={30} direction="left">
+          {content.hero.tickerItems.map((item, index) => (
+            <div key={index} className="flex items-center gap-8 sm:gap-14">
+              <span className="text-xs sm:text-sm tracking-[0.2em] uppercase font-medium text-[#D4C3B3] hover:text-[#FAF8F5] transition-colors whitespace-nowrap">
+                {item}
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#A38468] shrink-0" />
+            </div>
+          ))}
+        </Marquee>
       </div>
     </section>
   );
