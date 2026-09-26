@@ -76,7 +76,16 @@ function MainLayout() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  const exitAdmin = () => {
+  const exitAdmin = async () => {
+    // When backing out from admin panel to public website, automatically sign out as requested
+    if (isAuthenticated) {
+      try {
+        await logout();
+      } catch (err) {
+        console.warn('Auto signout error on exit:', err);
+      }
+    }
+
     try {
       const url = new URL(window.location.href);
       url.searchParams.delete('admin');

@@ -1,6 +1,7 @@
 import { ArrowDownRight, Sparkles } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import { Marquee } from './Marquee';
+import { getAssetUrl } from '../utils/assetUrl';
 
 export function Hero() {
   const { content } = useContent();
@@ -10,7 +11,7 @@ export function Hero() {
       {/* Background Image with Warm Vignette & Overlays */}
       <div className="absolute inset-0 z-0">
         <img
-          src={content.hero.bgImage}
+          src={getAssetUrl(content.hero.bgImage)}
           alt="Editorial social media session capture"
           className="w-full h-full object-cover object-center scale-105 filter brightness-[0.45] contrast-[1.08]"
           loading="eager"

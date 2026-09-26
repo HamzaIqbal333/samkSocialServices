@@ -1,5 +1,6 @@
 import { Check, ArrowRight, Sparkles } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
+import { getAssetUrl } from '../utils/assetUrl';
 
 export function Services() {
   const { content, setSelectedService } = useContent();
@@ -97,7 +98,7 @@ export function Services() {
                 <div className="lg:col-span-5">
                   <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] rounded-2xl overflow-hidden border border-[#3A2E28] bg-[#140F0D] group">
                     <img
-                      src={service.image}
+                      src={getAssetUrl(service.image)}
                       alt={service.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.05]"
                       loading="lazy"

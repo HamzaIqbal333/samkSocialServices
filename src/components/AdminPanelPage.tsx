@@ -224,8 +224,9 @@ export function AdminPanelPage({ onNavigateToSite }: AdminPanelPageProps) {
             <button
               onClick={onNavigateToSite}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#3A2E28] bg-[#1F1714] text-xs text-[#C4B29E] hover:text-[#FAF8F5] hover:border-[#A38468] transition-all cursor-pointer"
+              title="Return to public website and sign out"
             >
-              <span className="hidden sm:inline">View Website</span>
+              <span className="hidden sm:inline">Back to Website</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
 

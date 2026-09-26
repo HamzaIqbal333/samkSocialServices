@@ -94,13 +94,22 @@ export function Footer() {
         <div className="pt-8 border-t border-[#1C1512] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#746150]">
           <p>{content.footer.copyright}</p>
 
-          <button
-            onClick={scrollToTop}
-            className="flex items-center gap-1.5 hover:text-[#FAF8F5] transition-colors cursor-pointer"
-          >
-            <span>{content.footer.backToTopText}</span>
-            <ArrowUp className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-6">
+            <a
+              href="#admin"
+              className="text-[#52443B] hover:text-[#A38468] transition-colors text-[11px] tracking-wider uppercase"
+            >
+              Studio Admin
+            </a>
+
+            <button
+              onClick={scrollToTop}
+              className="flex items-center gap-1.5 hover:text-[#FAF8F5] transition-colors cursor-pointer"
+            >
+              <span>{content.footer.backToTopText}</span>
+              <ArrowUp className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     </footer>

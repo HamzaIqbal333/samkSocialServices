@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, Edit2, Trash2, X, Image as ImageIcon, ArrowUp, ArrowDown, Eye } from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
 import { GalleryItem } from '../../types';
+import { getAssetUrl } from '../../utils/assetUrl';
 
 export function GalleryManager() {
   const { content, updateSection, isSaving } = useContent();
@@ -229,7 +230,7 @@ export function GalleryManager() {
             <div className="space-y-3">
               <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-[#120D0B] border border-[#2A201A]">
                 <img
-                  src={item.image}
+                  src={getAssetUrl(item.image)}
                   alt={item.text}
                   className="w-full h-full object-cover"
                   loading="lazy"

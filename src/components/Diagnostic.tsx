@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
+import { getAssetUrl } from '../utils/assetUrl';
 
 export function Diagnostic() {
   const { content } = useContent();
@@ -89,7 +90,7 @@ export function Diagnostic() {
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#130E0C]">
                 <img
                   key={activeItem.image}
-                  src={activeItem.image}
+                  src={getAssetUrl(activeItem.image)}
                   alt={activeItem.title}
                   className="w-full h-full object-cover filter contrast-[1.05] transition-opacity duration-500 animate-fadeIn"
                   loading="lazy"

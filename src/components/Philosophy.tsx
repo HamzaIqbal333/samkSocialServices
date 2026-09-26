@@ -1,5 +1,6 @@
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
+import { getAssetUrl } from '../utils/assetUrl';
 
 export function Philosophy() {
   const { content } = useContent();
@@ -14,7 +15,7 @@ export function Philosophy() {
               {/* Primary Image */}
               <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-2xl overflow-hidden border border-[#3A2E28] shadow-2xl shadow-black/60 bg-[#1B1512]">
                 <img
-                  src={content.philosophy.founderImage1}
+                  src={getAssetUrl(content.philosophy.founderImage1)}
                   alt={content.philosophy.founderName}
                   className="w-full h-full object-cover object-top filter contrast-[1.05]"
                   loading="lazy"
@@ -35,7 +36,7 @@ export function Philosophy() {
               {/* Floating Secondary Accent Card */}
               <div className="absolute -bottom-8 -right-4 sm:-right-8 w-44 sm:w-56 aspect-[3/4] rounded-xl overflow-hidden border border-[#A38468]/40 shadow-2xl bg-[#1E1714] hidden sm:block">
                 <img
-                  src={content.philosophy.founderImage2}
+                  src={getAssetUrl(content.philosophy.founderImage2)}
                   alt="On location capture"
                   className="w-full h-full object-cover filter contrast-[1.05]"
                   loading="lazy"

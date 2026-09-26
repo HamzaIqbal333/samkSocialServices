@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Instagram, X, Eye, Play, Pause } from 'lucide-re
 import { useContent } from '../context/ContentContext';
 import { GalleryItem } from '../types';
 import { Marquee } from './Marquee';
+import { getAssetUrl } from '../utils/assetUrl';
 
 export function Gallery() {
   const { content } = useContent();
@@ -80,7 +81,7 @@ export function Gallery() {
                   className="group relative flex-none w-[270px] sm:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-[#2D231E] bg-[#181210] shadow-lg hover:border-[#A38468]/70 hover:shadow-2xl transition-all duration-300 cursor-pointer"
                 >
                   <img
-                    src={item.image}
+                    src={getAssetUrl(item.image)}
                     alt={item.text}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.05]"
                     loading="lazy"
@@ -118,7 +119,7 @@ export function Gallery() {
                 className="group relative flex-none w-[280px] sm:w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-[#2D231E] bg-[#181210] shadow-lg hover:border-[#A38468]/60 transition-all duration-300 snap-start cursor-pointer"
               >
                 <img
-                  src={item.image}
+                  src={getAssetUrl(item.image)}
                   alt={item.text}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.05]"
                   loading="lazy"
@@ -178,7 +179,7 @@ export function Gallery() {
 
             <div className="aspect-[4/3] rounded-xl overflow-hidden bg-[#130E0C]">
               <img
-                src={selectedItem.image}
+                src={getAssetUrl(selectedItem.image)}
                 alt={selectedItem.text}
                 className="w-full h-full object-cover"
               />

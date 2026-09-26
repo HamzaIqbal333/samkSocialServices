@@ -35,6 +35,8 @@ jobs:
 
       - name: Build production bundle
         run: npm run build
+        env:
+          VITE_BASE_PATH: '/samkSocialServices/'
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

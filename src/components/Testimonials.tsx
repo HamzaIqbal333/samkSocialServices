@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Quote, Play, Pause, Star } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import { Marquee } from './Marquee';
+import { getAssetUrl } from '../utils/assetUrl';
 
 export function Testimonials() {
   const { content } = useContent();
@@ -87,7 +88,7 @@ export function Testimonials() {
               {/* Author Meta */}
               <div className="flex items-center gap-4 pt-5 border-t border-[#261E1A]">
                 <img
-                  src={test.image}
+                  src={getAssetUrl(test.image)}
                   alt={test.name}
                   className="w-12 h-12 rounded-full object-cover border border-[#A38468]/40 shrink-0"
                   loading="lazy"

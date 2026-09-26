@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, Edit2, Trash2, X, Quote, ArrowUp, ArrowDown, Star } from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
 import { TestimonialItem } from '../../types';
+import { getAssetUrl } from '../../utils/assetUrl';
 
 export function TestimonialsManager() {
   const { content, updateSection, isSaving } = useContent();
@@ -232,7 +233,7 @@ export function TestimonialsManager() {
             <div className="flex items-center justify-between pt-3 border-t border-[#251D18]">
               <div className="flex items-center gap-3">
                 <img
-                  src={test.image}
+                  src={getAssetUrl(test.image)}
                   alt={test.name}
                   className="w-9 h-9 rounded-full object-cover border border-[#A38468]/50"
                   loading="lazy"
