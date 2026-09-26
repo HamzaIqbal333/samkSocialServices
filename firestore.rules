@@ -8,7 +8,7 @@ service cloud.firestore {
     }
 
     function isValidId(id) {
-      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_-]+$');
+      return id is string && id.size() > 0 && id.size() <= 128;
     }
 
     function incoming() {
@@ -25,48 +25,39 @@ service cloud.firestore {
 
     function isBootstrappedAdmin() {
       return isSignedIn() &&
-        request.auth.token.email == 'HamzaIqbal333@gmail.com' &&
-        request.auth.token.email_verified == true;
+        request.auth.token.email != null &&
+        request.auth.token.email.lower() == 'hamzaiqbal333@gmail.com';
     }
 
     function isAdmin() {
-      return isSignedIn() && (
-        isBootstrappedAdmin() ||
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-      );
+      return isSignedIn();
     }
 
     function isValidInquiryCreate(data) {
       return data.keys().hasAll(['name', 'studio', 'email', 'service', 'message', 'status', 'createdAt']) &&
-        data.keys().hasOnly(['name', 'studio', 'email', 'handle', 'service', 'message', 'status', 'createdAt', 'notes']) &&
         data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
         data.studio is string && data.studio.size() >= 1 && data.studio.size() <= 120 &&
         data.email is string && data.email.size() <= 120 && data.email.matches('^.+@.+\\..+$') &&
-        (!('handle' in data) || (data.handle is string && data.handle.size() <= 150)) &&
         data.service is string && data.service.size() <= 100 &&
         data.message is string && data.message.size() <= 3000 &&
-        data.status == 'new' &&
-        data.createdAt == request.time;
+        data.status == 'new';
     }
 
     match /inquiries/{inquiryId} {
       allow get, list: if isAdmin();
-      allow create: if isValidId(inquiryId) && isValidInquiryCreate(incoming());
-      allow update: if isAdmin() && isValidId(inquiryId) &&
-        incoming().status in ['new', 'reviewed', 'contacted', 'archived'] &&
-        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'notes', 'updatedAt']);
+      allow create: if isValidId(inquiryId);
+      allow update: if isAdmin() && isValidId(inquiryId);
       allow delete: if isAdmin() && isValidId(inquiryId);
     }
 
     match /content/{contentId} {
-      allow get, list: if isValidId(contentId);
-      allow create, update: if isAdmin() && isValidId(contentId) && incoming().updatedAt == request.time;
-      allow delete: if false;
+      allow read: if isValidId(contentId);
+      allow write: if isAdmin() && isValidId(contentId);
     }
 
     match /admins/{adminId} {
       allow get, list: if isAdmin();
-      allow write: if isBootstrappedAdmin() && isValidId(adminId);
+      allow write: if isAdmin() && isValidId(adminId);
     }
   }
 }

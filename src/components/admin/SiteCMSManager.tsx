@@ -11,7 +11,9 @@ import {
   CheckCircle2,
   PhoneCall,
   Compass,
-  Database
+  Database,
+  AlertTriangle,
+  XCircle
 } from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
 import { ServicesManager } from './ServicesManager';
@@ -20,7 +22,17 @@ import { TestimonialsManager } from './TestimonialsManager';
 import { DiagnosticManager } from './DiagnosticManager';
 
 export function SiteCMSManager() {
-  const { content, updateField, updateSection, resetToDefault, syncAllToFirestore, isSaving, saveMessage } = useContent();
+  const {
+    content,
+    updateField,
+    updateSection,
+    resetToDefault,
+    syncAllToFirestore,
+    hasFirestoreDoc,
+    isSaving,
+    saveMessage,
+    saveError
+  } = useContent();
 
   const [cmsSubTab, setCmsSubTab] = useState<'services' | 'gallery' | 'testimonials' | 'diagnostic' | 'hero' | 'contact'>('services');
 
@@ -155,6 +167,45 @@ export function SiteCMSManager() {
           </button>
         </div>
       </div>
+
+      {/* Firestore Status / Missing Doc Notice */}
+      {hasFirestoreDoc === false && (
+        <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-700/60 text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-start sm:items-center gap-3">
+            <AlertTriangle className="w-5 h-5 shrink-0 text-amber-400 mt-0.5 sm:mt-0" />
+            <div>
+              <p className="font-semibold text-amber-100">
+                Firestore Database is Currently Blank (No documents exist yet)
+              </p>
+              <p className="text-amber-300/80 text-[11px] mt-0.5">
+                The website is displaying built-in fallback defaults. Click &apos;Sync All to Firestore (default)&apos; to upload and create the <code className="bg-amber-900/60 px-1 py-0.5 rounded font-mono text-amber-100">content/main</code> document now.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={syncAllToFirestore}
+            disabled={isSaving}
+            className="shrink-0 px-4 py-2 rounded-xl bg-amber-400 text-amber-950 font-bold text-xs uppercase tracking-wider hover:bg-amber-300 transition-all cursor-pointer shadow-md flex items-center gap-2"
+          >
+            <Database className="w-3.5 h-3.5" />
+            <span>{isSaving ? 'Syncing...' : 'Upload Now to Firestore'}</span>
+          </button>
+        </div>
+      )}
+
+      {/* Error banner */}
+      {saveError && (
+        <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-200 text-xs flex items-start gap-2.5 shadow-md">
+          <XCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+          <div className="space-y-1">
+            <p className="font-medium text-rose-100">Write Error:</p>
+            <p className="text-rose-300/90 font-mono text-[11px]">{saveError}</p>
+            <p className="text-rose-300/70 text-[11px]">
+              Note: If this is a permission error, ensure you are logged into an admin account and that your Firestore Security Rules in Firebase Console allow authenticated admin writes.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Status banner */}
       {saveMessage && (

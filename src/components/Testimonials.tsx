@@ -16,21 +16,21 @@ export function Testimonials() {
       name: "Charlotte Hayes",
       role: "Founder, Atelier Noire Sydney",
       quote: "Our engagement skyrocketed by 280% in the first quarter. Sam's taste level is unmatched in the luxury space.",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80"
+      image: "/images/testimonial-sarah.jpg"
     },
     {
       id: "test-5",
       name: "Julian Sterling",
       role: "Managing Director, Sterling Fine Art",
       quote: "The iPhone 4K capture looks richer and more authentic than any six-figure production agency we hired previously.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80"
+      image: "/images/testimonial-marcus.jpg"
     },
     {
       id: "test-6",
       name: "Amara Davies",
       role: "Creative Director, Lumina Skin Clinic",
       quote: "Client inquiries are consistently booking out 4 weeks in advance. Handing our marketing over to Sam was our best ROI.",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80"
+      image: "/images/testimonial-elena.jpg"
     }
   ];
 

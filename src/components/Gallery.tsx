@@ -85,6 +85,7 @@ export function Gallery() {
                     alt={item.text}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.05]"
                     loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#130E0C] via-[#130E0C]/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
 
@@ -123,6 +124,7 @@ export function Gallery() {
                   alt={item.text}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.05]"
                   loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#130E0C] via-[#130E0C]/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
 

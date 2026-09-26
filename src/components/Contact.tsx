@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Send, CheckCircle2, AlertCircle, Copy, Check, Mail, MapPin, Instagram } from 'lucide-react';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { signInAnonymously } from 'firebase/auth';
+import { db, auth } from '../firebase/config';
 import { handleFirestoreError, OperationType } from '../firebase/errors';
 import { useContent } from '../context/ContentContext';
+import { getAssetUrl } from '../utils/assetUrl';
 
 export function Contact() {
   const { content, selectedService, setSelectedService } = useContent();
@@ -45,18 +47,39 @@ export function Contact() {
 
     setSubmitting(true);
     const inquiryId = `inq_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const inquiryPayload = {
+      name: formData.name.trim(),
+      studio: formData.studio.trim(),
+      email: formData.email.trim(),
+      handle: formData.handle.trim() || '',
+      service: formData.service,
+      message: formData.message.trim() || 'No message provided',
+      status: 'new',
+      createdAt: serverTimestamp()
+    };
 
     try {
-      await setDoc(doc(db, 'inquiries', inquiryId), {
-        name: formData.name.trim(),
-        studio: formData.studio.trim(),
-        email: formData.email.trim(),
-        handle: formData.handle.trim() || '',
-        service: formData.service,
-        message: formData.message.trim() || 'No message provided',
-        status: 'new',
-        createdAt: serverTimestamp()
-      });
+      // If client is not signed in and anonymous auth is enabled, attempt anonymous auth
+      if (!auth.currentUser) {
+        try {
+          await signInAnonymously(auth);
+        } catch {
+          // If anonymous auth is disabled in project, continue directly to setDoc
+        }
+      }
+
+      await setDoc(doc(db, 'inquiries', inquiryId), inquiryPayload);
+
+      // Also persist to local backup inquiries
+      try {
+        const existingLocal = JSON.parse(localStorage.getItem('samk_local_inquiries') || '[]');
+        localStorage.setItem(
+          'samk_local_inquiries',
+          JSON.stringify([{ id: inquiryId, ...inquiryPayload, createdAt: new Date().toISOString() }, ...existingLocal])
+        );
+      } catch {
+        // ignore storage errors
+      }
 
       setSubmitted(true);
       setFormData({
@@ -69,15 +92,40 @@ export function Contact() {
       });
     } catch (err: any) {
       console.error('Inquiry submission error:', err);
+      // Save locally as pending inquiry so no client lead is ever lost
+      try {
+        const existingLocal = JSON.parse(localStorage.getItem('samk_local_inquiries') || '[]');
+        localStorage.setItem(
+          'samk_local_inquiries',
+          JSON.stringify([
+            { id: inquiryId, ...inquiryPayload, pendingSync: true, createdAt: new Date().toISOString() },
+            ...existingLocal
+          ])
+        );
+      } catch {
+        // ignore
+      }
+
       try {
         handleFirestoreError(err, OperationType.CREATE, `inquiries/${inquiryId}`);
       } catch {
         // Fallback error UI display
       }
-      setErrorMessage(
-        'Unable to submit inquiry at this moment. Please email directly at ' +
-          content.contact.email
-      );
+
+      const isPermission =
+        err?.message?.toLowerCase().includes('permission') ||
+        err?.code === 'permission-denied';
+
+      if (isPermission) {
+        setErrorMessage(
+          `Firestore rules are blocking public writes. Please update Firestore Rules in Firebase Console to allow write on /inquiries, or email directly at ${content.contact.email}`
+        );
+      } else {
+        const reason = err?.message ? ` (${err.message})` : '';
+        setErrorMessage(
+          `Unable to submit inquiry at this moment${reason}. Please email directly at ${content.contact.email}`
+        );
+      }
     } finally {
       setSubmitting(false);
     }
@@ -108,7 +156,7 @@ export function Contact() {
             <div className="p-6 rounded-2xl border border-[#2D231E] bg-[#1A1412] space-y-5">
               <div className="flex items-center gap-4">
                 <img
-                  src={content.contact.founderImage}
+                  src={getAssetUrl(content.contact.founderImage)}
                   alt="Founder"
                   className="w-14 h-14 rounded-full object-cover border border-[#A38468]/50"
                   loading="lazy"

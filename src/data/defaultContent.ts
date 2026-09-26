@@ -281,7 +281,7 @@ export const defaultContent: SiteContent = {
     founderImage: "/images/founder-trench.jpg",
     founderRole: "SAM K. • FOUNDER & STRATEGIST",
     founderQuote: "I partner with brands I genuinely believe in.",
-    email: "hello@samksocials.com",
+    email: "hamzaiqbal333@gmail.com",
     location: "Sydney, Australia • Worldwide",
     instagramHandle: "@samk.socials",
     availability: "Now Booking Client Partnerships",

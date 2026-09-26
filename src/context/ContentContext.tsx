@@ -9,14 +9,16 @@ import { useAuth } from './AuthContext';
 interface ContentContextType {
   content: SiteContent;
   isCustomized: boolean;
+  hasFirestoreDoc: boolean | null;
   selectedService: string;
   setSelectedService: (serviceName: string) => void;
   updateSection: (sectionKey: keyof SiteContent, data: any) => Promise<void>;
   updateField: (path: string, value: any) => Promise<void>;
   resetToDefault: () => Promise<void>;
-  syncAllToFirestore: () => Promise<void>;
+  syncAllToFirestore: () => Promise<boolean>;
   isSaving: boolean;
   saveMessage: string | null;
+  saveError: string | null;
 }
 
 const ContentContext = createContext<ContentContextType | null>(null);
@@ -24,17 +26,19 @@ const ContentContext = createContext<ContentContextType | null>(null);
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<SiteContent>(defaultContent);
   const [isCustomized, setIsCustomized] = useState(false);
+  const [hasFirestoreDoc, setHasFirestoreDoc] = useState<boolean | null>(null);
   const [selectedService, setSelectedService] = useState<string>('Social Media Management');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
-    const docPath = 'content/main';
     const unsub = onSnapshot(
       doc(db, 'content', 'main'),
       (snapshot) => {
         if (snapshot.exists()) {
+          setHasFirestoreDoc(true);
           const remoteData = snapshot.data();
           setContent({
             ...defaultContent,
@@ -63,11 +67,14 @@ export function ContentProvider({ children }: { children: ReactNode }) {
             }
           });
           setIsCustomized(true);
+        } else {
+          setHasFirestoreDoc(false);
+          setIsCustomized(false);
         }
       },
       (error) => {
-        // Log snapshot error using standardized handler
         console.warn('Real-time content listener fallback to default:', error.message);
+        setHasFirestoreDoc(false);
       }
     );
 
@@ -77,6 +84,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   const updateSection = async (sectionKey: keyof SiteContent, data: any) => {
     setIsSaving(true);
     setSaveMessage(null);
+    setSaveError(null);
     try {
       const updated = {
         ...content,
@@ -85,7 +93,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
           ...data
         },
         updatedAt: serverTimestamp(),
-        updatedBy: user?.uid || 'admin'
+        updatedBy: user?.uid || user?.email || 'admin'
       };
 
       await setDoc(doc(db, 'content', 'main'), updated, { merge: true });
@@ -93,10 +101,17 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         ...prev,
         [sectionKey]: Array.isArray(data) ? data : { ...(prev[sectionKey] as any), ...data }
       }));
+      setHasFirestoreDoc(true);
       setSaveMessage('Changes published live to Firestore!');
       setTimeout(() => setSaveMessage(null), 3000);
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'content/main');
+    } catch (err: any) {
+      console.error('Error in updateSection:', err);
+      setSaveError(err?.message || 'Failed to update section. Please check permissions.');
+      try {
+        handleFirestoreError(err, OperationType.WRITE, 'content/main');
+      } catch {
+        // Logged
+      }
     } finally {
       setIsSaving(false);
     }
@@ -105,6 +120,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   const updateField = async (path: string, value: any) => {
     setIsSaving(true);
     setSaveMessage(null);
+    setSaveError(null);
     try {
       const parts = path.split('.');
       const clone = JSON.parse(JSON.stringify(content));
@@ -118,13 +134,20 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       await setDoc(doc(db, 'content', 'main'), {
         ...clone,
         updatedAt: serverTimestamp(),
-        updatedBy: user?.uid || 'admin'
+        updatedBy: user?.uid || user?.email || 'admin'
       });
       setContent(clone);
+      setHasFirestoreDoc(true);
       setSaveMessage('Field updated successfully!');
       setTimeout(() => setSaveMessage(null), 3000);
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'content/main');
+    } catch (err: any) {
+      console.error('Error in updateField:', err);
+      setSaveError(err?.message || 'Failed to update field. Please check permissions.');
+      try {
+        handleFirestoreError(err, OperationType.WRITE, 'content/main');
+      } catch {
+        // Logged
+      }
     } finally {
       setIsSaving(false);
     }
@@ -132,35 +155,55 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
   const resetToDefault = async () => {
     setIsSaving(true);
+    setSaveMessage(null);
+    setSaveError(null);
     try {
       await setDoc(doc(db, 'content', 'main'), {
         ...defaultContent,
         updatedAt: serverTimestamp(),
-        updatedBy: user?.uid || 'admin'
+        updatedBy: user?.uid || user?.email || 'admin'
       });
       setContent(defaultContent);
+      setHasFirestoreDoc(true);
       setIsCustomized(false);
       setSaveMessage('Reset to studio editorial defaults!');
       setTimeout(() => setSaveMessage(null), 3000);
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'content/main');
+    } catch (err: any) {
+      console.error('Error in resetToDefault:', err);
+      setSaveError(err?.message || 'Failed to reset. Please check permissions.');
+      try {
+        handleFirestoreError(err, OperationType.WRITE, 'content/main');
+      } catch {
+        // Logged
+      }
     } finally {
       setIsSaving(false);
     }
   };
 
-  const syncAllToFirestore = async () => {
+  const syncAllToFirestore = async (): Promise<boolean> => {
     setIsSaving(true);
+    setSaveMessage(null);
+    setSaveError(null);
     try {
       await setDoc(doc(db, 'content', 'main'), {
         ...content,
         updatedAt: serverTimestamp(),
-        updatedBy: user?.uid || 'admin'
+        updatedBy: user?.uid || user?.email || 'admin'
       });
-      setSaveMessage('All content successfully synchronized to Firestore (default) database!');
-      setTimeout(() => setSaveMessage(null), 4000);
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'content/main');
+      setHasFirestoreDoc(true);
+      setSaveMessage('All content successfully synchronized to Firestore (default) database /content/main!');
+      setTimeout(() => setSaveMessage(null), 5000);
+      return true;
+    } catch (err: any) {
+      console.error('Failed to sync to Firestore:', err);
+      setSaveError(err?.message || 'Failed to push to Firestore. Please check Firebase rules.');
+      try {
+        handleFirestoreError(err, OperationType.WRITE, 'content/main');
+      } catch {
+        // Logged
+      }
+      return false;
     } finally {
       setIsSaving(false);
     }
@@ -171,6 +214,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       value={{
         content,
         isCustomized,
+        hasFirestoreDoc,
         selectedService,
         setSelectedService,
         updateSection,
@@ -178,7 +222,8 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         resetToDefault,
         syncAllToFirestore,
         isSaving,
-        saveMessage
+        saveMessage,
+        saveError
       }}
     >
       {children}
